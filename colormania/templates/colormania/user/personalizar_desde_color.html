@@ -1,0 +1,84 @@
+{% extends "colormania/base.html" %}
+{% load static %}
+
+{% block title %}Eligiendo Pintura para {{ color_hex }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    
+    <!-- ENCABEZADO: MUESTRA EL COLOR ELEGIDO -->
+    <div class="text-center mb-5">
+        <h1 class="bobby display-4" style="color: #131128;">
+            HAS ELEGIDO EL COLOR: 
+            <span style="text-shadow: 1px 1px 2px black;">{{ color_hex }}</span>
+        </h1>
+        <p class="lead bobby fs-3 text-muted">Ahora selecciona en qué pintura deseas aplicarlo</p>
+        
+        <!-- Muestra visual del color -->
+        <input type="color" value="{{ color_hex }}" disabled
+            class="mx-auto mb-4 rounded-4 shadow-lg"
+            style="width: 170px; height: 130px; border: 6px solid white; cursor: pointer; pointer-events: none; box-shadow: 0 12px 30px rgba(0,0,0,0.3);">
+    </div>
+
+    <!-- LISTA DE PINTURAS DISPONIBLES -->
+    <div class="row row-cols-1 row-cols-md-5 g-4">
+        {% for pintura in pinturas %}
+        <div class="col">
+            <div class="card h-100 shadow border-0" style="border-radius: 20px; overflow: hidden;">
+                
+                <!-- Foto Pintura -->
+                <div style="height: 250px; overflow: hidden; position: relative;">
+                    {% if pintura.foto_pintura %}
+                        <img src="{{ pintura.foto_pintura.url }}" class="w-100 h-100" style="object-fit: cover;">
+                    {% else %}
+                        <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-paint-roller fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    
+
+                </div>
+
+                <div class="card-body text-center">
+                    <h4 class="bobby mb-2">{{ pintura.nombre }}</h4>
+                    <p class="text-muted small">{{ pintura.descripcion|truncatewords:10 }}</p>
+                    <h3 class="bobby" style="color: #64c1ff;">${{ pintura.precio }}</h3>
+
+                    <!-- FORMULARIO INDIVIDUAL POR PINTURA -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <!-- Campos ocultos necesarios -->
+                        <input type="hidden" name="pintura_id" value="{{ pintura.id }}">
+                        
+                        <div class="d-flex justify-content-center align-items-center gap-2 mt-3">
+                            <label class="fw-bold small">Cant:</label>
+                            <input type="number" name="cantidad" value="1" min="1" 
+                                   class="form-control text-center rounded-pill" 
+                                   style="width: 70px;">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 rounded-pill mt-3 shadow bobby transform-hover">
+                            APLICAR COLOR AQUÍ <i class="fas fa-check ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{% url 'calidos' %}" class="btn btn-secondary rounded-pill px-5 bobby">
+            <i class="fas fa-arrow-left me-2"></i> Volver a elegir color
+        </a>
+    </div>
+
+</div>
+
+<style>
+    .transform-hover:hover {
+        transform: translateY(-5px);
+        transition: 0.3s;
+    }
+</style>
+{% endblock %}
